@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}RiboRepa - MS{% endblock %}
+{% block head %}{% endblock %}
+{% block content %}
+
+<p></p>
+<body>
+<div class="container-fluid">
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+        </div>
+        <div class="col-8">
+
+            <h4>MS data</h4>
+            <div class="table-responsive">
+                <table class="table table-hover"
+                       id="MS_table">{{MS_table |safe }}
+                </table>
+            </div>
+            <div id="MS_table_"></div>
+            <script>
+                                var table = $('#MS_table').DataTable({"order": [], columnDefs : [{ targets : [0],render : function(data) {
+                                    return '<a href="/ORF/'+data+'" target_blank>'+data+'</a>'}}] });
+                                var buttons = new $.fn.dataTable.Buttons(table, {buttons: [
+                                {extend: 'csvHtml5', extension: '.tsv',text: 'TSV', fieldSeparator: '\t', title: 'MS_table', className: 'btn btn-outline-primary',
+                                }]}).container().appendTo($('#MS_table_'));
+
+
+            </script>
+
+        </div>
+        <div class="col-2">
+        </div>
+    </div>
+</div>
+</body>
+{% endblock %}

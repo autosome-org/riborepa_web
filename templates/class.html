@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}RiboRepa - {{class_s}}{% endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+<p>
+</p>
+<body>
+<div class="container-fluid">
+    <div class="row  justify-content-md-center">
+        <div class="col-3">
+        </div>
+        <div class="col-6">
+            <h3><b> Class: {{class_s}}</b></h3>
+            {% for class in selected_classes %}
+            <div id="{{class}}">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>
+                            <div class='mirror'>RepBase class: {{class}}</div>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <h5>Families:</h5>
+                        {% for orf in classes_dict[class]['families'] %}
+                        <a href="/family/{{orf}}">{{orf}}</a>{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                        <h5>Elements:</h5>
+                        {% for element in classes_dict[class]['elements'] %}
+                        <a href="/element/{{element}}">{{element}}</a>{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <p></p>
+            {% endfor %}
+        </div>
+        <div class="col-3">
+        </div>
+    </div>
+</div>
+</body>
+{% endblock %}

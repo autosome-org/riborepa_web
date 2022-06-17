@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}RiboRepa - {{family}}{% endblock %}
+{% block head %}{% endblock %}
+
+{% block content %}
+<p></p>
+<body>
+<div class="container-fluid">
+    <div class="row justify-content-md-center">
+        <div class="col-3">
+        </div>
+        <div class="col-6">
+            <h3><b> Family: {{family}}</b></h3>
+            {% for element in elements %}
+            <div id="{{elements}}">
+                <p>
+                <div class="card">
+                    <div class="card-header">
+                        <h4><div class='mirror'><a href="/element/{{element}}">{{element}}</a></div></h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center">
+                            <image class="img-fluid"
+                                   src="{{url_for('static', filename = '/img/dna_view_without_annotation/')}}{{element}}.png">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p></p>
+            {% endfor %}
+        </div>
+        <div class="col-3">
+        </div>
+    </div>
+</div>
+</body>
+{% endblock %}

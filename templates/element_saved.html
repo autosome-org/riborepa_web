@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% endblock %}
+
+{% block head %}
+
+
+
+
+
+    <style>
+
+        body {
+      position: relative;
+      }
+      ul.nav-pills {
+          top: 90px;
+          position: fixed;
+      }
+      th { font-size: 14px; }
+      td { font-size: 13px; }
+
+         hr {
+      display: block;
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+      margin-left: auto;
+      margin-right: auto;
+      border-style: inset;
+      border-width: 1px;
+    }
+    </style>
+
+
+{% endblock %}
+
+{% block content %}
+
+
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.bootstrap4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.colVis.min.js"></script>
+
+
+<p> </p>
+
+<body data-spy="scroll" data-target="#myScrollspy" data-offset="10">
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-2" id="myScrollspy">
+
+
+      <ul class="nav nav-pills flex-column" data-spy="affix" data-offset-top="50">
+
+
+                 <li class="nav-item">
+                     <a class="nav-link active" href="#Structure"><h5>Element structure</h5></a>
+                 </li>
+                 <li class="nav-item">
+                     <a class="nav-link active" href="#Curated_frames"><h5>Curated frames</h5></a>
+                 </li>
+                 <li class="nav-item">
+                     <a class="nav-link active" href="#Other_frames"><h5>Other frames</h5></a>
+                 </li>
+                 <li class="nav-item">
+                     <a class="nav-link active" href="#Element_information"><h5>Element information</h5></a>
+                 </li>
+
+
+      </ul>
+    </div>
+
+    <div class="col-10">
+        <div id = "Structure" >
+
+                <h2>Element: {{element}}, Family: <a href="/family/{{family_id}}">{{family}}</a> </h2>
+
+                <image class="rounded mx-auto d-block" width="750px" src="{{url_for('static', filename = '/img/structures/')}}{{element}}.png">
+
+        </div>
+            <p>
+            </p>
+            <p>
+            </p>
+            {% for j in range(0,2) %}
+                {% if j == 0 %}
+                    <div id = "Curated_frames" >
+
+                          <h3> Curated frames </h3>
+
+                {% elif j == 1 %}
+                    <div id = "Other_frames" >
+                         <h3> Other frames </h3>
+
+                {% endif %}
+
+
+                {% for element in data[j] %}
+                     <div class="card" >
+                     <div class="card-header"><h4>{{element['name']}}</h4> </div>
+                     <div class="card-body">
+                        <image class="rounded mx-auto d-block" width="99%" src="{{url_for('static', filename = '/img/frames/')}}{{element['id']}}.png">
+                   <hr>
+
+
+                        <div class="accordion" id="accordionExample">
+                          <div class="card">
+                            <div class="card-header" id="headingOne">
+                              <h2 class="mb-0">
+                                <button class="btn btn-block text-left" type="button" data-toggle="collapse" data-target="#{{element['id']}}_nblast" aria-expanded="true" aria-controls="collapseOne">
+                                  Nucleotide blast results
+                                </button>
+                              </h2>
+                            </div>
+                            <div id="{{element['id']}}_nblast" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                              <div class="card-body">
+
+                                {% if element['table_nblast'] != 'NA' %}
+                                    <b>The table with the filtered results of the nucleotide blast.</b> <br>
+                                    <i> The filter:
+                                     Alignment intersects with the transcript's CDS on the same strand; Transcript type is protein coding; Transcript's level and support level are 1 or 2 </i>
+
+                                    <div class="table-responsive">
+                                    <table class="table table-hover"   cellspacing="0" id = '{{element["id"]}}_table_nblast'>
+                                    {{ element['table_nblast']|safe }}
+                                        </table>
+                                    </div>
+
+                                    <div id="{{element['id']}}_table_nblast_"></div>
+                                    <script>
+                                         var table = $('#{{element['id']}}_table_nblast').DataTable();
+
+                                         var buttons = new $.fn.dataTable.Buttons(table, {
+                                             buttons: [
+                                             {
+                                               extend: 'csvHtml5', title: '{{element['id']}}_nblast', titleAttr: 'CSV', className: 'btn btn-outline-primary',
+                                               }
+                                            ]
+                                        }).container().appendTo($('#{{element['id']}}_table_nblast_'));
+                                    </script>
+
+
+                                 {% else %}
+                                    <b> No results of nucleotide blast found </b>
+                                 {% endif %}
+
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card">
+                            <div class="card-header" id="headingTwo">
+                              <h2 class="mb-0">
+                                <button class="btn btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#{{element['id']}}_pblast" aria-expanded="false" aria-controls="collapseTwo">
+                                  Protein blast results
+                                </button>
+                              </h2>
+                            </div>
+                            <div id="{{element['id']}}_pblast" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                              <div class="card-body">
+
+                                {% if element['table_pblast'] != 'NA' %}
+                                    <b>The table with the filtered results of the protein blast.</b> <br>
+                                    <i> The filter:
+                                     100% alignment on the annotated proteins</i>
+
+                                    <div class="table-responsive">
+                                    <table class="table table-hover"   cellspacing="0" id = '{{element["id"]}}_table_pblast'>
+                                    {{ element['table_pblast']|safe }}
+                                        </table>
+                                    </div>
+
+                                    <div id="{{element['id']}}_table_pblast_"></div>
+                                    <script>
+                                         var table = $('#{{element['id']}}_table_pblast').DataTable();
+
+                                         var buttons = new $.fn.dataTable.Buttons(table, {
+                                             buttons: [
+                                             {
+                                               extend: 'csvHtml5', title: '{{element['id']}}_pblast', titleAttr: 'CSV', className: 'btn btn-outline-primary',
+                                               }
+                                            ]
+                                        }).container().appendTo($('#{{element['id']}}_table_pblast_'));
+                                    </script>
+
+
+                                 {% else %}
+                                    <b> No results of protein blast found </b>
+                                 {% endif %}
+
+                              </div>
+                            </div>
+                          </div>
+
+                        </div>
+
+
+
+                        <hr>
+                         dsfsdfsdf
+
+                     </div>
+                     </div>
+            <p></p>
+
+                {% endfor %}
+                    </div>
+
+            {% endfor %}
+
+</body>
+
+
+
+{% endblock %}

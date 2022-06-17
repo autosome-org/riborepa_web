@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block title %}RiboRepa - {{orf}}{% endblock %}
+{% block head %}{% endblock %}
+
+{% block content %}
+<body>
+<div class="container-fluid">
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+        </div>
+        <div class="col-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4>Class: <a href="/class/{{element_class}}">{{element_class}}</a>,
+                        Family: <a href="/family/{{element_family}}">{{element_family}}</a>,
+                        Element: <a href="/element/{{element}}">{{element}}</a>
+                        ORF id: {{orf}}</h4>
+                    <hr>
+                    <h5>Structure:</h5>
+                    <image class="img-fluid mx-auto d-block" width="75%"
+                           src="{{url_for('static', filename = 'img/dna_view_with_labeling_and_annotation/')}}{{orf}}.png">
+                        <hr>
+                        <h5>Parameters distributions and coverage of the ORF in Datasets:</h5>
+                        <div id="{{orf.replace(':','_')}}" class="carousel carousel-dark slide" data-interval="false
+                             data-bs-ride="carousel">
+                            <div class="carousel-indicators">
+                                <button type="button" data-bs-target="#{{orf.replace(':','_')}}" data-bs-slide-to="0"
+                                        class="active" aria-current="true" aria-label="Slide 1"></button>
+                                <button type="button" data-bs-target="#{{orf.replace(':','_')}}" data-bs-slide-to="1"
+                                        aria-label="Slide 2"></button>
+                                <button type="button" data-bs-target="#{{orf.replace(':','_')}}" data-bs-slide-to="2"
+                                        aria-label="Slide 3"></button>
+                                <button type="button" data-bs-target="#{{orf.replace(':','_')}}k" data-bs-slide-to="3"
+                                        aria-label="Slide 4"></button>
+                                <button type="button" data-bs-target="#{{orf.replace(':','_')}}" data-bs-slide-to="4"
+                                        aria-label="Slide 5"></button>
+                                <button type="button" data-bs-target="#{{orf.replace(':','_')}}k" data-bs-slide-to="5"
+                                        aria-label="Slide 6"></button>
+                            </div>
+                            <div class="carousel-inner">
+                                {% for dataset in frame_dict["datasets"] %}
+                                <div {% if loop.first %} class="carousel-item active">{% else %}
+                                    class="carousel-item">{% endif %}
+                                    <img src="{{url_for('static', filename = 'img/arranged_figures/')}}{{dataset}}_{{orf}}.png"
+                                         class="d-block w-100">
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <button class="carousel-control-prev" type="button"
+                                    data-bs-target="#{{orf.replace(':','_')}}"
+                                    data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button"
+                                    data-bs-target="#{{orf.replace(':','_')}}"
+                                    data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                        <p>
+                        <hr>
+                        </p>
+                        <h5>Filtering statistics:</h5>
+                        Format for each dataset: (Coverage filter | FOOPS filter | FLOSS filter ), 1 - filter's passed,
+                        0 - filter's not passed
+                        <div class="table-responsive">
+                            <table class="table" cellspacing="0"
+                                   id="{{orf.replace(':','_')}}_sequence_features_table">{{
+                                frame_dict["filtering_stat_table"].replace('<tr>', '<tr style="text-align: center;">') |safe }}
+                            </table>
+                        </div>
+                        <div id="{{orf.replace(':','_')}}_sequence_features_table_"></div>
+                        <script>
+                                var table = $('#{{orf.replace(':','_')}}_sequence_features_table').DataTable({sort: false, searching: false, paging: false, info: false});
+
+                        </script>
+                        <p><hr></p>
+                        <h5>Sequence features:</h5>
+                        <p>
+                            <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#multiCollapseExample1" aria-expanded="false"
+                                    aria-controls="multiCollapseExample1">Nucleotide sequence
+                            </button>
+                            <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#multiCollapseExample2" aria-expanded="false"
+                                    aria-controls="multiCollapseExample2">Amino acids sequence
+                            </button>
+                        </p>
+                        <div class="row">
+                            <div class="col">
+                                <div class="collapse multi-collapse" id="multiCollapseExample1">
+                                    <div class="card card-body">
+                                        {{frame_dict['fasta_nucleotide']}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="collapse multi-collapse" id="multiCollapseExample2">
+                                    <div class="card card-body">
+                                        {{frame_dict['fasta_aa']}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p>
+                        <hr>
+                        </p>
+                        <h5>Blast results:</h5>
+                        <div class="accordion" id="accordionExample_{{orf.replace(':','_')}}">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading_collapse_{{orf.replace(':','_')}}_repmasker">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapse_{{orf.replace(':','_')}}_repmasker"
+                                            aria-expanded="false"
+                                            aria-controls="collapse_{{orf.replace(':','_')}}_repmasker">
+                                        Protein-based RepeatMasking results
+                                    </button>
+                                </h2>
+                                <div id="collapse_{{orf.replace(':','_')}}_repmasker"
+                                     class="accordion-collapse collapse"
+                                     aria-labelledby="heading_collapse_{{orf.replace(':','_')}}_repmasker"
+                                     data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        {% if frame_dict["repmask_table"] != 'NA' %}
+                                        Searching for nucleotide sequence of the ORF was performed against transposable
+                                        element
+                                        protein database
+                                        via Protein-based RepeatMasking service.
+                                        <div class="table-responsive">
+                                            <table class="table table-hover" cellspacing="0"
+                                                   id="{{orf.replace(':','_')}}_table_repmask">{{
+                                                frame_dict["repmask_table"]|safe }}
+                                            </table>
+                                        </div>
+                                        <div id="{{orf.replace(':','_')}}_table_repmask_"></div>
+                                        <script>
+                                var table = $('#{{orf.replace(':','_')}}_table_repmask').DataTable({searching: false, paging: false, info: false});
+                                var buttons = new $.fn.dataTable.Buttons(table, {buttons: [
+                                {extend: 'csvHtml5', extension: '.tsv',text: 'TSV', fieldSeparator: '\t', title: '{{orf.replace(':','_')}}_table_repmask', className: 'btn btn-outline-primary',
+                                }]}).container().appendTo($('#{{orf.replace(':','_')}}_table_repmask_'));
+
+                                        </script>
+                                        {% else %}
+                                        No results were found in searching against transposable element protein database
+                                        (RepeatMasker)
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading_collapse_{{orf.replace(':','_')}}_nblast">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapse_{{orf.replace(':','_')}}_nblast"
+                                            aria-expanded="false"
+                                            aria-controls="collapse_{{orf.replace(':','_')}}_nblast">
+                                        Nucleotide blast results
+                                    </button>
+                                </h2>
+                                <div id="collapse_{{orf.replace(':','_')}}_nblast"
+                                     class="accordion-collapse collapse"
+                                     aria-labelledby="heading_collapse_{{orf.replace(':','_')}}_nblast"
+                                     data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <h6>Nucleotide blast results:</h6>
+                                        {% if frame_dict["nblast_table"] != 'NA' %}
+                                        Searching for nucleotide sequence of the ORF was performed against Human
+                                        transcriptome
+                                        (GENCODE v.38) via blastn v.2.11.0. Only results which intersect transcripts'
+                                        CDS regions
+                                        are shown.
+                                        <p></p>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover" cellspacing="0"
+                                                   id="{{orf.replace(':','_')}}_table_nblast">{{
+                                                frame_dict["nblast_table"]|safe }}
+                                            </table>
+                                        </div>
+                                        <div id="{{orf.replace(':','_')}}_table_nblast_"></div>
+                                        <script>
+                                var table = $('#{{orf.replace(':','_')}}_table_nblast').DataTable({searching: false});
+                                var buttons = new $.fn.dataTable.Buttons(table, {buttons: [
+                                {extend: 'csvHtml5', extension: '.tsv',text: 'TSV', fieldSeparator: '\t', title: '{{orf.replace(':','_')}}_table_nblast', className: 'btn btn-outline-primary',
+                                }]}).container().appendTo($('#{{orf.replace(':','_')}}_table_nblast_'));
+
+                                        </script>
+                                        {% else %}
+                                        No intersections the ORF's sequence with CDSs of Human transcriptome (GENCODE
+                                        v.38) were
+                                        found via
+                                        blastn v.2.11.0.
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading_collapse_{{orf.replace(':','_')}}_pblast">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapse_{{orf.replace(':','_')}}_pblast"
+                                            aria-expanded="false"
+                                            aria-controls="collapse_{{orf.replace(':','_')}}_pblast">
+                                        Protein blast results:
+                                    </button>
+                                </h2>
+                                <div id="collapse_{{orf.replace(':','_')}}_pblast"
+                                     class="accordion-collapse collapse"
+                                     aria-labelledby="heading_collapse_{{orf.replace(':','_')}}_pblast"
+                                     data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <h6>Protein blast results:</h6>
+                                        {% if frame_dict["pblast_table"] != 'NA' %}
+                                        Searching for protein subsequences of the ORF which were found in MS data was
+                                        performed
+                                        against Human
+                                        proteom
+                                        (GENCODE v.38) via blastp v.2.11.0.
+                                        <p></p>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover" cellspacing="0"
+                                                   id="{{orf.replace(':','_')}}_table_pblast">{{
+                                                frame_dict["pblast_table"]|safe }}
+                                            </table>
+                                        </div>
+                                        <div id="{{orf.replace(':','_')}}_table_pblast_"></div>
+                                        <script>
+                                var table = $('#{{orf.replace(':','_')}}_table_pblast').DataTable({searching: false});
+                                var buttons = new $.fn.dataTable.Buttons(table, {buttons: [
+                                {extend: 'csvHtml5', extension: '.tsv',text: 'TSV', fieldSeparator: '\t', title: '{{orf.replace(':','_')}}_table_pblast', className: 'btn btn-outline-primary',
+                                }]}).container().appendTo($('#{{orf.replace(':','_')}}_table_pblast_'));
+
+
+
+
+
+
+                                        </script>
+                                        {% else %}
+                                        No protein subsequences of the ORF which were found in MS data were detected in
+                                        Human
+                                        proteom (GENCODE
+                                        v.38) via
+                                        blastp v.2.11.0.
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+        </div>
+    </div>
+</div>
+</body>
+{% endblock %}

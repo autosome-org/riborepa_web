@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}RiboRepa - ORFs{% endblock %}
+{% block head %}{% endblock %}
+{% block content %}
+
+<style>
+th {
+    text-align: left;
+    max-width: 300px;
+    min-width: 150px;
+    word-wrap: break-word;
+}
+td {
+    width: 100%;
+}
+tr{
+}
+
+</style>
+<p></p>
+<body>
+<div class="container-fluid">
+    <div class="row justify-content-md-center">
+        <div class="col-2">
+        </div>
+        <div class="col-8">
+
+                    <h4>Filtered ORFs</h4>
+
+                    <div class="accordion" id="accordion_ORFs_tables">
+                        {% for class in ['4', '3', '2', '1'] %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading_collapse_class_{{class}}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapse_class_{{class}}"
+                                        aria-expanded="false"
+                                        aria-controls="collapse_class_{{class}}">
+                                    {{labels_dict[class]}}
+                                </button>
+                            </h2>
+                            <div id="collapse_class_{{class}}"
+                                 class="accordion-collapse collapse"
+                                 aria-labelledby="heading_collapse_class_{{class}}"
+                                 data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover"
+
+                                               id="{{class}}_table">{{
+                                            classes_tables_dict[class] |safe }}
+                                        </table>
+                                    </div>
+                                    <div id="{{class}}_table_"></div>
+                                    <script>
+                                var table = $('#{{class}}_table').DataTable({"order": [], columnDefs : [{ targets : [0,15],render : function(data) {
+                                    return '<a href="/ORF/'+data+'" target_blank>'+data+'</a>'}}, { targets : [1],render : function(data) {
+                                    return '<a href="/element/'+data+'" target_blank>'+data+'</a>'}}, { targets : [2],render : function(data) {
+                                    return '<a href="/family/'+data+'" target_blank>'+data+'</a>'}}] });
+                                var buttons = new $.fn.dataTable.Buttons(table, {buttons: [
+                                {extend: 'csvHtml5', extension: '.tsv',text: 'TSV', fieldSeparator: '\t', title: '{{class}}_table', className: 'btn btn-outline-primary',
+                                }]}).container().appendTo($('#{{class}}_table_'));
+
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+        <div class="col-2">
+        </div>
+    </div>
+</div>
+</body>
+{% endblock %}
